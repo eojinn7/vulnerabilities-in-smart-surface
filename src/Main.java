@@ -1,14 +1,10 @@
+
 public class Main {
     public static void main(String[] args) {
-        Environment environment = new Environment(10, 25, 2, 10);
+        // Create a 25x10 environment, with the box starting at row 2, column 10
+        Environment environment = new Environment(25, 10, 2, 5);
 
-        // initial environment
-        environment.displayInitialEnvironment();
-
-        // decision environment
-        environment.displayDecisionEnvironment();
-
-        // environment after moving the box
-        environment.displayMovedEnvironment();
+        // Simulate the environment
+        environment.simulate();
     }
 }
