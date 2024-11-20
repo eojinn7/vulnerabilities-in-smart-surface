@@ -38,15 +38,15 @@ public class Environment {
     }
 
     public void simulate() {
+        // Print the initial environment
+        displayInitialEnvironment();
+
         // Continue moving the box down until it reaches the bottom edge
         while (boxRow + boxHeight < grid.getRows() - 1) {
-            // Stage 1: Display the initial environment
-            displayInitialEnvironment();
-
-            // Stage 2: Display the voting environment
+            // Stage 1: Display the voting environment
             displayDecisionEnvironment();
 
-            // Stage 3: Display the moved environment
+            // Stage 2: Display the moved environment
             displayMovedEnvironment();
         }
     }
