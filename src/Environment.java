@@ -53,6 +53,8 @@ public class Environment {
             count++;
         }
         System.out.println("\nNumber of steps: " + count);
+        int numCarrying = boxHeight * boxWidth;
+        System.out.println("Number of carrying agents: " + numCarrying);
     }
 
     public void displayInitialEnvironment() {
