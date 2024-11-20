@@ -1,3 +1,4 @@
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,14 +37,26 @@ public class Environment {
         }
     }
 
+    public void simulate() {
+        // Continue moving the box down until it reaches the bottom edge
+        while (boxRow + boxHeight < grid.getRows() - 1) {
+            // Stage 1: Display the initial environment
+            displayInitialEnvironment();
+
+            // Stage 2: Display the voting environment
+            displayDecisionEnvironment();
+
+            // Stage 3: Display the moved environment
+            displayMovedEnvironment();
+        }
+    }
+
     public void displayInitialEnvironment() {
-        // Display the initial environment with the box and default symbols
         System.out.println("Initial Env:");
         grid.displayGrid();
     }
 
     public void displayDecisionEnvironment() {
-        // Store weighted votes for each direction
         Map<String, Integer> votes = new HashMap<>();
         votes.put(">", 0);
         votes.put("<", 0);
@@ -56,26 +69,23 @@ public class Environment {
                 Cell cell = grid.getCell(i, j);
 
                 if (cell.getSymbol().equals("B")) {
-                    // Carrying agents (box) always vote to move left
-                    String vote = "<"; // Force carrying agents to vote left
+                    // Carrying agents (box) always vote to move down
+                    String vote = "V";
                     cell.setSymbol(vote);
                     votes.put(vote, votes.get(vote) + 3); // Weighted vote
                 } else if (isSurrounding(i, j)) {
-                    // Surrounding agents decide direction
-                    String vote = decideMovement(i, j);
+                    // Surrounding agents always vote to move down
+                    String vote = "V";
                     cell.setSymbol(vote);
                     votes.put(vote, votes.get(vote) + 1); // Lower influence
                 } else if (isPenaltyZone(i, j)) {
-                    // Penalty zone remains as "X"
-                    cell.setSymbol("X");
+                    cell.setSymbol("X"); // Penalty zone
                 } else {
-                    // Agents not carrying, not surrounding, and no decision
-                    cell.setSymbol(".");
+                    cell.setSymbol("."); // No decision
                 }
             }
         }
 
-        // Display the environment with decisions
         System.out.println("\nVoting:");
         grid.displayGrid();
 
@@ -84,7 +94,6 @@ public class Environment {
     }
 
     public void displayMovedEnvironment() {
-        // Display the environment after the box has moved
         System.out.println("\nMoved:");
         grid.displayGrid();
     }
@@ -99,33 +108,13 @@ public class Environment {
         return row == 0 || row == grid.getRows() - 1 || col == 0 || col == grid.getCols() - 1;
     }
 
-    private String decideMovement(int row, int col) {
-        // Surrounding agents decide direction based on relative position to the box
-        if (row < boxRow) return "^"; // Vote to move up
-        if (row >= boxRow + boxHeight) return "V"; // Vote to move down
-        if (col < boxCol) return "<"; // Vote to move left
-        if (col >= boxCol + boxWidth) return ">"; // Vote to move right
-        return "."; // Default for no movement
-    }
-
     private void moveBox(Map<String, Integer> votes) {
-        int up = votes.get("^");
-        int down = votes.get("V");
-        int left = votes.get("<");
-        int right = votes.get(">");
-
-        // move the box in the direction with the highest vote 
-        if (left > up && left > down && left > right && boxCol > 0) {
-            boxCol--; // left
-        } else if (up > down && up > left && up > right && boxRow > 0) {
-            boxRow--; // up
-        } else if (down > up && down > left && down > right && boxRow + boxHeight < grid.getRows()) {
-            boxRow++; // down
-        } else if (right > up && right > down && right > left && boxCol + boxWidth < grid.getCols()) {
-            boxCol++; // right
+        // The direction "down" (V) is always chosen
+        if (boxRow + boxHeight < grid.getRows() - 1) {
+            boxRow++; // Move down
         }
 
-        // update the grid after moving the box
+        // Update the grid after moving the box
         placeBox();
     }
 }
