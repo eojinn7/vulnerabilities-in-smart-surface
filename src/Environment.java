@@ -40,6 +40,7 @@ public class Environment {
     public void simulate() {
         // Print the initial environment
         displayInitialEnvironment();
+        int count = 0;
 
         // Continue moving the box down until it reaches the bottom edge
         while (boxRow + boxHeight < grid.getRows() - 1) {
@@ -48,7 +49,10 @@ public class Environment {
 
             // Stage 2: Display the moved environment
             displayMovedEnvironment();
+
+            count++;
         }
+        System.out.println("\nNumber of steps: " + count);
     }
 
     public void displayInitialEnvironment() {
