@@ -4,6 +4,8 @@ import java.util.Map;
 
 public class Environment {
     private Grid grid;
+    private int rows;
+    private int cols;
     private int boxRow; // Top-left corner of the box
     private int boxCol;
     private int boxHeight = 4; // Box height
@@ -11,6 +13,8 @@ public class Environment {
 
     public Environment(int rows, int cols, int boxRow, int boxCol) {
         this.grid = new Grid(rows, cols);
+        this.rows = rows;
+        this.cols = cols;
         this.boxRow = boxRow;
         this.boxCol = boxCol;
         placeBox();
@@ -35,6 +39,16 @@ public class Environment {
                 grid.getCell(i, j).setSymbol("B"); // Box occupies this cell
             }
         }
+
+        /**  Place defective agents
+        grid.getCell(3, 4).setSymbol("-");
+        grid.getCell(4, 4).setSymbol("-"); 
+        grid.getCell(4, 5).setSymbol("-"); 
+        grid.getCell(6, 4).setSymbol("-"); 
+        grid.getCell(7, 4).setSymbol("-"); 
+        grid.getCell(7, 5).setSymbol("-"); 
+        grid.getCell(8, 4).setSymbol("-"); */
+        
     }
 
     public void simulate() {
@@ -42,19 +56,29 @@ public class Environment {
         displayInitialEnvironment();
         int count = 0;
 
+        int numSurrounding = 0;
+
         // Continue moving the box down until it reaches the bottom edge
         while (boxRow + boxHeight < grid.getRows() - 1) {
             // Stage 1: Display the voting environment
-            displayDecisionEnvironment();
+            numSurrounding = displayDecisionEnvironment();
+
+            int numCarrying = boxHeight * boxWidth;
+            int numOther = rows * cols - (numCarrying + numSurrounding);
+
+            System.out.println("\nNumber of steps: " + count);
+            System.out.println("Number of carrying agents: " + numCarrying);
+            System.out.println("Number of surrounding agents: " + numSurrounding);
+            System.out.println("Number of other agents: " + numOther);
 
             // Stage 2: Display the moved environment
             displayMovedEnvironment();
 
             count++;
         }
-        System.out.println("\nNumber of steps: " + count);
-        int numCarrying = boxHeight * boxWidth;
-        System.out.println("Number of carrying agents: " + numCarrying);
+
+        System.out.println("\nFinal destination reached!");
+        System.out.println("\nNumber of steps taken: " + count + "\n");
     }
 
     public void displayInitialEnvironment() {
@@ -62,12 +86,14 @@ public class Environment {
         grid.displayGrid();
     }
 
-    public void displayDecisionEnvironment() {
+    public int displayDecisionEnvironment() {
         Map<String, Integer> votes = new HashMap<>();
         votes.put(">", 0);
         votes.put("<", 0);
         votes.put("^", 0);
         votes.put("V", 0);
+
+        int numSurrounding = 0; 
 
         // Iterate through the grid and update decisions
         for (int i = 0; i < grid.getRows(); i++) {
@@ -83,6 +109,7 @@ public class Environment {
                     // Surrounding agents always vote to move down
                     String vote = "V";
                     cell.setSymbol(vote);
+                    numSurrounding += 1;
                     votes.put(vote, votes.get(vote) + 1); // Lower influence
                 } else if (isPenaltyZone(i, j)) {
                     cell.setSymbol("X"); // Penalty zone
@@ -97,6 +124,8 @@ public class Environment {
 
         // Move the box based on votes
         moveBox(votes);
+
+        return numSurrounding;
     }
 
     public void displayMovedEnvironment() {
@@ -107,7 +136,8 @@ public class Environment {
     private boolean isSurrounding(int row, int col) {
         return row >= boxRow - 1 && row <= boxRow + boxHeight &&
                col >= boxCol - 1 && col <= boxCol + boxWidth &&
-               !grid.getCell(row, col).getSymbol().equals("B");
+               !grid.getCell(row, col).getSymbol().equals("B"); //|| 
+             //  !grid.getCell(row, col).getSymbol().equals("-");
     }
 
     private boolean isPenaltyZone(int row, int col) {
