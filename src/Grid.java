@@ -1,4 +1,3 @@
-// Grid.java
 public class Grid {
   private int rows;
   private int cols;
@@ -35,7 +34,7 @@ public class Grid {
     return null;
   }
 
-  public boolean setDetective(int row, int col) {
+  public boolean setDefective(int row, int col) {
     Cell cell = getCell(row, col);
     if (cell != null) {
       cell.setDefective(true);
@@ -52,3 +51,4 @@ public class Grid {
     return cols;
   }
 }
+
