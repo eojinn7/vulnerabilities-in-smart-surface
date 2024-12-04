@@ -55,7 +55,7 @@ public class Environment {
 
   }
 
-  public void simulate() {
+  public int simulate() {
     // Print the initial environment
     displayInitialEnvironment();
     
@@ -83,7 +83,7 @@ public class Environment {
     }
 
     System.out.println("\nNumber of steps: " + (stepCount-1));
-
+    return stepCount - 1;
     // votes.getvalue(key)
   }
 
